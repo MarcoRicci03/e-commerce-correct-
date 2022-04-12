@@ -16,11 +16,6 @@ include("../chkCreateCart.php");
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="../css/style.css" rel="stylesheet" />
-    <script>
-        function openCart() {
-            location.replace("../cart/cart.php");
-        }
-    </script>
 </head>
 
 <body>
@@ -33,7 +28,7 @@ include("../chkCreateCart.php");
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="#!">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" aria-current="page" href="#!">Home</a></li>
                     <!-- <li class="nav-item"><a class="nav-link" href="#!">About</a></li> -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
@@ -48,7 +43,7 @@ include("../chkCreateCart.php");
                     </li>
                     <li class="nav-item"><a class="nav-link toggle" aria-current="page" href="../profile/profile.php">Profile</a></li>
                 </ul>
-                <form class="d-flex" action="../cart/cart.php">
+                <form class="d-flex">
                     <button class="btn btn-outline-dark" type="submit">
                         <i class="bi-cart-fill me-1"></i>
                         Cart
@@ -59,6 +54,7 @@ include("../chkCreateCart.php");
                                                                                     } else {
                                                                                         echo "0";
                                                                                     }
+
                                                                                     ?></span>
                     </button>
                 </form>
@@ -78,12 +74,18 @@ include("../chkCreateCart.php");
     <section class="py-5">
         <div class="container px-4 px-lg-5 mt-5">
             <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-                <!-- Inizio oggetto -->
                 <?php
                 include("../connection.php");
-                $q = "SELECT * FROM articles";
-                $result = $conn->query($q);
-                while ($row = $result->fetch_assoc()) {
+                $ids_amount =  explode("n", $_COOKIE["cart"]);
+                $ids = [];
+                for ($i = 0; $i <  sizeof($ids_amount)- 1; $i++) {
+                    $id = explode("-", $ids_amount[$i]);
+                    $ids[$i] = $id;
+                    $q = "SELECT * FROM articles WHERE id_article = $id[0]";
+                    $result = $conn->query($q);
+
+                    $row = $result->fetch_assoc();
+                    //echo var_dump($row);
                     echo "<div class='col mb-5'>";
                     echo "<div class='card h-100'>";
                     if (file_exists("../img/product_$row[id_article].jpg")) {
@@ -100,12 +102,14 @@ include("../chkCreateCart.php");
                     echo "</div>";
                     echo "</div>";
                     echo "<div class='card-footer p-4 pt-0 border-top-0 bg-transparent'>";
-                    echo "<div class='text-center'><a class='btn btn-outline-dark mt-auto' href='../cart/chkAddCart.php?id_article=$row[id_article]'>Aggiungi al carrello</a></div>";
+                    echo "<div class='text-center'><a class='btn btn-outline-dark mt-auto' href='..'>Rimuovi dal carrello</a></div>";
                     echo "</div>";
                     echo "</div>";
                     echo "</div>";
                 }
+                echo var_dump($ids);
                 ?>
+
 
             </div>
         </div>
