@@ -6,14 +6,22 @@ include("../connection.php");
 <html>
 
 <head>
-<meta charset="utf-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Shop Homepage - Start Bootstrap Template</title>
+    <title>E-Commerce Profile</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="../css/style.css" rel="stylesheet" />
+    <script>
+        function logOut() {
+            var ris = window.confirm("Sei sicuro di voler fare il logout?");
+            if (ris) {
+                window.location.replace('logout.php');
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -28,21 +36,35 @@ include("../connection.php");
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#!">All Products</a></li>
+                            <li><a class="dropdown-item" href="#!">Tutti i prodotti</a></li>
                             <li>
                                 <hr class="dropdown-divider" />
                             </li>
-                            <li><a class="dropdown-item" href="#!">Popular Items</a></li>
-                            <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
+                            <li><a class="dropdown-item" href="#!">Categorie</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item dropdown"><a class="nav-link active" aria-current="page" href="../profile/profile.php">Profile</a></li>
+                    <?php
+                    if (isset($_SESSION['id_user'])) {
+                        include("../connection.php");
+                        $q = "SELECT name, surname FROM users WHERE id_user = $_SESSION[id_user]";
+                        $result = $conn->query($q);
+                        $row = $result->fetch_assoc();
+                        echo '<li class="nav-item"><a class="nav-link active" aria-current="page" href="../profile/profile.php">' . $row['name'] . ', ' .  $row['surname'] . '</a></li>';
+                    } else {
+                        echo '<li class="nav-item"><a class="nav-link active" aria-current="page" href="../login/login.php">Accedi</a></li>';
+                    } ?>
                 </ul>
-                <form class="d-flex">
+                <form class="d-flex" action="../cart/cart.php">
                     <button class="btn btn-outline-dark" type="submit">
                         <i class="bi-cart-fill me-1"></i>
                         Cart
-                        <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
+                        <span class="badge bg-dark text-white ms-1 rounded-pill"><?php
+                                                                                    if (isset($_COOKIE["cart_quantita"])) {
+                                                                                        echo  $_SESSION["sommaProdotti"];
+                                                                                    } else {
+                                                                                        echo "0";
+                                                                                    }
+                                                                                    ?></span>
                     </button>
                 </form>
             </div>
@@ -71,6 +93,10 @@ include("../connection.php");
             echo "<label>Cognome: $row[surname]</label><br>";
         }
         ?>
+
+        <a>Modifica i tuoi dati</a>
+        <br>
+        <button onclick="logOut()">Logout</button>
     </div>
     <!-- Footer-->
     <footer class="py-5 bg-dark" style="position: sticky; top: 100%;">

@@ -1,8 +1,5 @@
 <?php
 include("../chkCreateCart.php");
-if (!isset($_SESSION)) {
-    session_start();
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -12,18 +9,13 @@ if (!isset($_SESSION)) {
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>E-Commerce Homepage</title>
+    <title>Shop Homepage - Start Bootstrap Template</title>
     <!-- Favicon-->
     <!-- <link rel="icon" type="image/x-icon" href="assets/favicon.ico" /> -->
     <!-- Bootstrap icons-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="../css/style.css" rel="stylesheet" />
-    <script>
-        function openCart() {
-            location.replace("../cart/cart.php");
-        }
-    </script>
 </head>
 
 <body>
@@ -36,21 +28,23 @@ if (!isset($_SESSION)) {
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="../index/index.php">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" aria-current="page" href="../index/index.php">Home</a></li>
+                    <!-- <li class="nav-item"><a class="nav-link" href="#!">About</a></li> -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#!">Tutti i prodotti</a></li>
+                            <li><a class="dropdown-item" href="#!">All Products</a></li>
                             <li>
                                 <hr class="dropdown-divider" />
                             </li>
-                            <li><a class="dropdown-item" href="#!">Categorie</a></li>
+                            <li><a class="dropdown-item" href="#!">Popular Items</a></li>
+                            <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
                         </ul>
                     </li>
                     <?php
                     if (isset($_SESSION['id_user'])) {
                         include("../connection.php");
-                        $q = "SELECT name, surname FROM users WHERE id_user = $_SESSION[id_user]";
+                        $q = "SELECT * FROM users WHERE id_user = $_SESSION[id_user]";
                         $result = $conn->query($q);
                         $row = $result->fetch_assoc();
                         echo '<li class="nav-item"><a class="nav-link toggle" aria-current="page" href="../profile/profile.php">' . $row['name'] . ', ' .  $row['surname'] . '</a></li>';
@@ -58,7 +52,7 @@ if (!isset($_SESSION)) {
                         echo '<li class="nav-item"><a class="nav-link toggle" aria-current="page" href="../login/login.php">Accedi</a></li>';
                     } ?>
                 </ul>
-                <form class="d-flex" action="../cart/cart.php">
+                <form class="d-flex">
                     <button class="btn btn-outline-dark" type="submit">
                         <i class="bi-cart-fill me-1"></i>
                         Cart
@@ -66,14 +60,14 @@ if (!isset($_SESSION)) {
                                                                                     if (isset($_COOKIE["cart_quantita"])) {
                                                                                         $temp = explode("-", $_COOKIE["cart_quantita"]);
                                                                                         $somma = 0;
-                                                                                        for ($i = 0; $i < sizeof($temp); $i++) {
-                                                                                            $somma += intval($temp[$i]);
+                                                                                        for ($i=0; $i < sizeof($temp); $i++) { 
+                                                                                            $somma += $temp[$i];
                                                                                         }
-                                                                                        $_SESSION["sommaProdotti"] = $somma;
-                                                                                        echo $somma;
+                                                                                        echo "s";
                                                                                     } else {
-                                                                                        echo "0";
+                                                                                        echo "ci";
                                                                                     }
+
                                                                                     ?></span>
                     </button>
                 </form>
@@ -84,8 +78,8 @@ if (!isset($_SESSION)) {
     <header class="bg-dark py-5">
         <div class="container px-4 px-lg-5 my-5">
             <div class="text-center text-white">
-                <h1 class="display-4 fw-bolder">Lista prodotti</h1>
-                <p class="lead fw-normal text-white-50 mb-0"></p>
+                <h1 class="display-4 fw-bolder">Shop in style</h1>
+                <p class="lead fw-normal text-white-50 mb-0">With this shop hompeage template</p>
             </div>
         </div>
     </header>
@@ -93,12 +87,18 @@ if (!isset($_SESSION)) {
     <section class="py-5">
         <div class="container px-4 px-lg-5 mt-5">
             <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-                <!-- Inizio oggetto -->
                 <?php
                 include("../connection.php");
-                $q = "SELECT * FROM articles";
-                $result = $conn->query($q);
-                while ($row = $result->fetch_assoc()) {
+                $ids_amount =  explode("n", $_COOKIE["cart"]);
+                $ids = [];
+                for ($i = 0; $i <  sizeof($ids_amount) - 1; $i++) {
+                    $id = $ids_amount[$i];
+                    $ids[$i] = $id;
+                    $q = "SELECT * FROM articles WHERE id_article = $id[0]";
+                    $result = $conn->query($q);
+
+                    $row = $result->fetch_assoc();
+                    //echo var_dump($row);
                     echo "<div class='col mb-5'>";
                     echo "<div class='card h-100'>";
                     if (file_exists("../img/product_$row[id_article].jpg")) {
@@ -112,16 +112,18 @@ if (!isset($_SESSION)) {
                     echo "<div class='text-center'>";
                     echo "<h5 class='fw-bolder'>$row[name]</h5>";
                     echo "$row[price]€<br>";
-                    echo "$row[average_stars]&#9733;<br>";
+                    echo "$row[average_stars]&#9733;";
                     echo "</div>";
                     echo "</div>";
                     echo "<div class='card-footer p-4 pt-0 border-top-0 bg-transparent'>";
-                    echo "<div class='text-center'><a class='btn btn-outline-dark mt-auto' href='../cart/chkAddCart.php?id_article=$row[id_article]'>Aggiungi al carrello</a></div>";
+                    echo "<div class='text-center'><a class='btn btn-outline-dark mt-auto' href='..'>Rimuovi dal carrello</a></div>";
                     echo "</div>";
                     echo "</div>";
                     echo "</div>";
                 }
+                echo var_dump($ids);
                 ?>
+
 
             </div>
         </div>

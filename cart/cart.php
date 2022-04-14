@@ -1,5 +1,8 @@
 <?php
 include("../chkCreateCart.php");
+if (!isset($_SESSION)) {
+    session_start();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -9,13 +12,36 @@ include("../chkCreateCart.php");
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Shop Homepage - Start Bootstrap Template</title>
+    <title>E-Commerce Cart</title>
     <!-- Favicon-->
     <!-- <link rel="icon" type="image/x-icon" href="assets/favicon.ico" /> -->
     <!-- Bootstrap icons-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="../css/style.css" rel="stylesheet" />
+    <script>
+        function add(valoreAttuale, max, pos) {
+            if ((valoreAttuale + 1) > max) {
+                alert("Impossibile aggiungere poiché questo é il massimo di prodotti disponibili.")
+            } else {
+                window.location.replace('editProduct.php?action=add&pos=' + pos);
+
+            }
+        }
+
+        function decrease(valoreAttuale, pos) {
+            if ((valoreAttuale - 1) <= 0) {
+                remove(pos);
+            } else {
+                window.location.replace('editProduct.php?action=decrease&pos=' + pos);
+
+            }
+        }
+
+        function remove(pos) {
+            window.location.replace('removeProduct.php?pos=' + pos);
+        }
+    </script>
 </head>
 
 <body>
@@ -28,33 +54,39 @@ include("../chkCreateCart.php");
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                    <li class="nav-item"><a class="nav-link" aria-current="page" href="#!">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" aria-current="page" href="../index/index.php">Home</a></li>
                     <!-- <li class="nav-item"><a class="nav-link" href="#!">About</a></li> -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#!">All Products</a></li>
+                            <li><a class="dropdown-item" href="#!">Tutti i prodotti</a></li>
                             <li>
                                 <hr class="dropdown-divider" />
                             </li>
-                            <li><a class="dropdown-item" href="#!">Popular Items</a></li>
-                            <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
+                            <li><a class="dropdown-item" href="#!">Categorie</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item"><a class="nav-link toggle" aria-current="page" href="../profile/profile.php">Profile</a></li>
+                    <?php
+                    if (isset($_SESSION['id_user'])) {
+                        include("../connection.php");
+                        $q = "SELECT * FROM users WHERE id_user = $_SESSION[id_user]";
+                        $result = $conn->query($q);
+                        $row = $result->fetch_assoc();
+                        echo '<li class="nav-item"><a class="nav-link toggle" aria-current="page" href="../profile/profile.php">' . $row['name'] . ', ' .  $row['surname'] . '</a></li>';
+                    } else {
+                        echo '<li class="nav-item"><a class="nav-link toggle" aria-current="page" href="../login/login.php">Accedi</a></li>';
+                    } ?>
                 </ul>
                 <form class="d-flex">
                     <button class="btn btn-outline-dark" type="submit">
                         <i class="bi-cart-fill me-1"></i>
                         Cart
                         <span class="badge bg-dark text-white ms-1 rounded-pill"><?php
-                                                                                    if (isset($_COOKIE["cart"])) {
-                                                                                        $temp = explode("n", $_COOKIE["cart"]);
-                                                                                        echo sizeof($temp) - 1;
+                                                                                    if (isset($_COOKIE["cart_quantita"])) {
+                                                                                        echo  $_SESSION["sommaProdotti"];
                                                                                     } else {
                                                                                         echo "0";
                                                                                     }
-
                                                                                     ?></span>
                     </button>
                 </form>
@@ -76,41 +108,42 @@ include("../chkCreateCart.php");
             <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
                 <?php
                 include("../connection.php");
-                $ids_amount =  explode("n", $_COOKIE["cart"]);
-                $ids = [];
-                for ($i = 0; $i <  sizeof($ids_amount)- 1; $i++) {
-                    $id = explode("-", $ids_amount[$i]);
-                    $ids[$i] = $id;
-                    $q = "SELECT * FROM articles WHERE id_article = $id[0]";
-                    $result = $conn->query($q);
-
-                    $row = $result->fetch_assoc();
-                    //echo var_dump($row);
-                    echo "<div class='col mb-5'>";
-                    echo "<div class='card h-100'>";
-                    if (file_exists("../img/product_$row[id_article].jpg")) {
-                        echo "<img class='card-img-top' src='../img/product_$row[id_article].jpg' alt='...' />";
-                    } else if (file_exists("../img/product_$row[id_article].png")) {
-                        echo "<img class='card-img-top' src='../img/product_$row[id_article].png' alt='...' />";
-                    } else {
-                        echo "<img class='card-img-top' src='../img/default.jpg' alt='...' />";
+                if (isset($_COOKIE["cart_ids"]) && isset($_COOKIE["cart_quantita"])) {
+                    $vettIDS =  explode("-", $_COOKIE["cart_ids"]);
+                    $vettQuantita = explode("-", $_COOKIE["cart_quantita"]);
+                    for ($i = 0; $i <  sizeof($vettIDS) - 1; $i++) {
+                        $q = "SELECT * FROM articles WHERE id_article = $vettIDS[$i]";
+                        $result = $conn->query($q);
+                        $row = $result->fetch_assoc();
+                        //echo var_dump($row);
+                        echo "<div class='col mb-5'>";
+                        echo "<div class='card h-100'>";
+                        if (file_exists("../img/product_$row[id_article].jpg")) {
+                            echo "<img class='card-img-top' src='../img/product_$row[id_article].jpg' alt='...' />";
+                        } else if (file_exists("../img/product_$row[id_article].png")) {
+                            echo "<img class='card-img-top' src='../img/product_$row[id_article].png' alt='...' />";
+                        } else {
+                            echo "<img class='card-img-top' src='../img/default.jpg' alt='...' />";
+                        }
+                        echo "<div class='card-body p-4'>";
+                        echo "<div class='text-center'>";
+                        echo "<h5 class='fw-bolder'>$row[name]</h5>";
+                        echo "$row[price]€<br>";
+                        echo "$row[average_stars]&#9733;<br>";
+                        echo "Quantitá: $vettQuantita[$i] <button onclick='add($vettQuantita[$i], $row[amount], $i)' class='btn btn-outline-dark mt-auto'>+</button><button onclick='decrease($vettQuantita[$i], $i)' class='btn btn-outline-dark mt-auto'>-</button>";
+                        echo "</div>";
+                        echo "</div>";
+                        echo "<div class='card-footer p-4 pt-0 border-top-0 bg-transparent'>";
+                        echo "<div class='text-center'><a class='btn btn-outline-dark mt-auto' href='removeProduct.php?pos=$i'>Rimuovi dal carrello</a></div>";
+                        echo "</div>";
+                        echo "</div>";
+                        echo "</div>";
                     }
-                    echo "<div class='card-body p-4'>";
-                    echo "<div class='text-center'>";
-                    echo "<h5 class='fw-bolder'>$row[name]</h5>";
-                    echo "$row[price]€&#9733;";
-                    echo "</div>";
-                    echo "</div>";
-                    echo "<div class='card-footer p-4 pt-0 border-top-0 bg-transparent'>";
-                    echo "<div class='text-center'><a class='btn btn-outline-dark mt-auto' href='..'>Rimuovi dal carrello</a></div>";
-                    echo "</div>";
-                    echo "</div>";
-                    echo "</div>";
+                } else {
+                    echo "Carrello vuoto";
                 }
-                echo var_dump($ids);
+
                 ?>
-
-
             </div>
         </div>
     </section>
