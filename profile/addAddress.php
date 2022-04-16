@@ -14,21 +14,6 @@ include("../connection.php");
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="../css/style.css" rel="stylesheet" />
-    <script>
-        function logOut() {
-            var ris = window.confirm("Sei sicuro di voler fare il logout?");
-            if (ris) {
-                window.location.replace('logout.php');
-            }
-        }
-
-        function delIndirizzo($id) {
-            var ris = window.confirm("Sei sicuro di voler cancellare questo indirizzo?");
-            if (ris) {
-                window.location.replace('deleteAddress.php?id='+ $id);
-            }
-        }
-    </script>
 </head>
 
 <body>
@@ -70,55 +55,29 @@ include("../connection.php");
     <header class="bg-dark py-1">
         <div class="container px-4 px-lg-5 my-5">
             <div class="text-center text-white">
-                <h1 class="display-4 fw-bolder">Profilo</h1>
-                <p class="lead fw-normal text-white-50 mb-0">Qui puoi visualizzare e modificare il tuo profilo</p>
+                <h1 class="display-4 fw-bolder">Aggiungi un indirizzo</h1>
+                <p class="lead fw-normal text-white-50 mb-0">Qui puoi aggiungere un nuovo indirizzo al tuo account</p>
             </div>
         </div>
     </header>
     <!--Profilo-->
-    <div class="text-center">
-        <?php
-        $q = "SELECT * FROM users WHERE id_user = $_SESSION[id_user]";
-        $result = $conn->query($q);
-        $row = $result->fetch_assoc();
-        if ($result->num_rows > 0) {
-            //echo var_dump($row);
-            echo "<label>Mail: $row[mail]</label><br>";
-            echo "<label>Username: $row[username]</label><br>";
-            echo "<label>Nome: $row[name]</label><br>";
-            echo "<label>Cognome: $row[surname]</label><br>";
-        }
-        ?>
-
-        <a href="editProfile.php">Modifica i tuoi dati</a>
-        <br>
-        <button onclick="logOut()">Logout</button>
-        <div style="margin-left: 25%; margin-right: 25%;">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Indirizzo</th>
-                        <th scope="col">Cittá</th>
-                        <th scope="col">Codice postale</th>
-                        <th scope="col">Elimina</th>
-                    </tr>
-                </thead>
-                <?php
-                $q = "SELECT * FROM addresses WHERE id_user = $_SESSION[id_user]";
-                $result = $conn->query($q);
-                while ($row = $result->fetch_assoc()) {
-                    echo "<tr>";
-                    echo '<th scope="row">1</th>';
-                    echo "<td>$row[address]</td>";
-                    echo "<td>$row[city]</td>";
-                    echo "<td>$row[postal_code]</td>";
-                    echo "<td><button style='border: none;' onclick='delIndirizzo($row[id_address])'><i class='bi bi-trash'></i></button></td>";
-                }
-                ?>
-            </table>
-            <a href="addAddress.php">Aggiungi un indirizzo</a>
-        </div>
+    <div class="text-center" style="margin-left: 40%; margin-right: 40%;">
+        <form action="chkAddAddress.php" method="POST">
+            <div class="form-group">
+                <label for="txtCity">Cittá</label>
+                <input required='true' type="text" class="form-control" id="txtCity" placeholder="Inserisci la cittá" name="txtCity">
+            </div>
+            <div class="form-group">
+                <label for="txtAddress">Indirizzo</label>
+                <input required='true' type="text" class="form-control" id="txtAddress" placeholder="Inserisci l'indirizzo" name="txtAddress">
+            </div>
+            <div class="form-group">
+                <label for="txtPostal_code">Codice postale</label>
+                <input required='true' type="number" class="form-control" id="txtPostal_code" placeholder="Inserisci il codice postale" name="txtPostal_code">
+            </div>
+            <br>
+            <button type="submit" class="btn btn-dark">Salva</button>
+        </form>
     </div>
     <!-- Footer-->
     <footer class="py-5 bg-dark" style="position: sticky; top: 100%;">

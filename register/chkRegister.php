@@ -1,5 +1,6 @@
 <?php
 include("../connection.php");
+session_start();
 if ($_POST['txtPass'] == $_POST['txtPassConfirm']) {
     $q = "SELECT * FROM users WHERE username = '$_POST[txtUsername]' OR mail = '$_POST[txtMail]'";
     $result = $conn->query($q);
@@ -11,10 +12,12 @@ if ($_POST['txtPass'] == $_POST['txtPassConfirm']) {
         // set parameters and execute
         $mail = $_POST['txtMail'];
         $username = $_POST['txtUsername'];
-        $pass = $_POST['txtPass'];
+        $pass = md5($_POST['txtPass']);
         $name = $_POST['txtName'];
         $surname = $_POST['txtSurname'];
         $stmt->execute();
+        $_SESSION["id_user"] = $row["id_user"];
+        header("location:../index/index.php");
     }
 } else {
     header("location:register.php?msg=Le password non corrispondono.");

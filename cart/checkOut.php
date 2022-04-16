@@ -9,7 +9,7 @@ include("../chkCreateCart.php");
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Shop Homepage - Start Bootstrap Template</title>
+    <title>E-Commerce Checkout</title>
     <!-- Favicon-->
     <!-- <link rel="icon" type="image/x-icon" href="assets/favicon.ico" /> -->
     <!-- Bootstrap icons-->
@@ -29,18 +29,6 @@ include("../chkCreateCart.php");
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                     <li class="nav-item"><a class="nav-link" aria-current="page" href="../index/index.php">Home</a></li>
-                    <!-- <li class="nav-item"><a class="nav-link" href="#!">About</a></li> -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#!">All Products</a></li>
-                            <li>
-                                <hr class="dropdown-divider" />
-                            </li>
-                            <li><a class="dropdown-item" href="#!">Popular Items</a></li>
-                            <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
-                        </ul>
-                    </li>
                     <?php
                     if (isset($_SESSION['id_user'])) {
                         include("../connection.php");
@@ -58,16 +46,10 @@ include("../chkCreateCart.php");
                         Cart
                         <span class="badge bg-dark text-white ms-1 rounded-pill"><?php
                                                                                     if (isset($_COOKIE["cart_quantita"])) {
-                                                                                        $temp = explode("-", $_COOKIE["cart_quantita"]);
-                                                                                        $somma = 0;
-                                                                                        for ($i=0; $i < sizeof($temp); $i++) { 
-                                                                                            $somma += $temp[$i];
-                                                                                        }
-                                                                                        echo "s";
+                                                                                        echo $_SESSION["sommaProdotti"];
                                                                                     } else {
-                                                                                        echo "ci";
+                                                                                        echo "0";
                                                                                     }
-
                                                                                     ?></span>
                     </button>
                 </form>
@@ -89,47 +71,32 @@ include("../chkCreateCart.php");
             <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
                 <?php
                 include("../connection.php");
-                $ids_amount =  explode("n", $_COOKIE["cart"]);
-                $ids = [];
-                for ($i = 0; $i <  sizeof($ids_amount) - 1; $i++) {
-                    $id = $ids_amount[$i];
-                    $ids[$i] = $id;
-                    $q = "SELECT * FROM articles WHERE id_article = $id[0]";
-                    $result = $conn->query($q);
-
-                    $row = $result->fetch_assoc();
-                    //echo var_dump($row);
-                    echo "<div class='col mb-5'>";
-                    echo "<div class='card h-100'>";
-                    if (file_exists("../img/product_$row[id_article].jpg")) {
-                        echo "<img class='card-img-top' src='../img/product_$row[id_article].jpg' alt='...' />";
-                    } else if (file_exists("../img/product_$row[id_article].png")) {
-                        echo "<img class='card-img-top' src='../img/product_$row[id_article].png' alt='...' />";
-                    } else {
-                        echo "<img class='card-img-top' src='../img/default.jpg' alt='...' />";
-                    }
-                    echo "<div class='card-body p-4'>";
-                    echo "<div class='text-center'>";
-                    echo "<h5 class='fw-bolder'>$row[name]</h5>";
-                    echo "$row[price]€<br>";
-                    echo "$row[average_stars]&#9733;";
-                    echo "</div>";
-                    echo "</div>";
-                    echo "<div class='card-footer p-4 pt-0 border-top-0 bg-transparent'>";
-                    echo "<div class='text-center'><a class='btn btn-outline-dark mt-auto' href='..'>Rimuovi dal carrello</a></div>";
-                    echo "</div>";
-                    echo "</div>";
-                    echo "</div>";
-                }
-                echo var_dump($ids);
+                $q = "SELECT * "
                 ?>
-
-
             </div>
         </div>
     </section>
+    
     <div class="text-center">
-
+        <a>Seleziona l'indirizzo di spedizione</a>
+        <div style="margin-left: 40%; margin-right: 40%;">
+            <?php
+            $q = "SELECT * FROM addresses WHERE id_user = $_SESSION[id_user]";
+            $result = $conn->query($q);
+            echo '<select required= "true" class="form-select" aria-label="Default select example">';
+            $ind = false;
+            while ($row = $result->fetch_assoc()) {
+                echo "<option>$row[city], $row[address], $row[postal_code]</option>";
+                $ind = true;
+            }
+            echo "</select>";
+            if($ind){
+                echo "<button onclick=" . "window.location.href='chkChekOut.php';" . " >Ordina</button>";
+            }
+            ?>
+        </div>
+        
+        <a>Se non hai nessun indirizzo giá inserito puoi aggiungerlo da </a><a href="../profile/addAddress.php">qui.</a>
     </div>
     <!-- Footer-->
     <footer class="py-5 bg-dark" style="position: sticky; top: 100%;">
