@@ -1,5 +1,6 @@
 <?php
 include("../chkCreateCart.php");
+include("../chkSession.php");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -45,8 +46,16 @@ include("../chkCreateCart.php");
                         <i class="bi-cart-fill me-1"></i>
                         Cart
                         <span class="badge bg-dark text-white ms-1 rounded-pill"><?php
-                                                                                    if (isset($_COOKIE["cart_quantita"])) {
-                                                                                        echo $_SESSION["sommaProdotti"];
+                                                                                    $stringCookieID = "cart_ids";
+                                                                                    $stringCookieQuantita = "cart_quantita";
+                                                                                    $quantitaSessionName = "sommaProdotti";
+                                                                                    if (isset($_SESSION['id_user'])) {
+                                                                                        $stringCookieID = "cart_ids_" . $_SESSION['id_user'];
+                                                                                        $stringCookieQuantita = "cart_quantita_" . $_SESSION['id_user'];
+                                                                                        $quantitaSessionName = "sommaProdotti_" . $_SESSION['id_user'];
+                                                                                    }
+                                                                                    if (isset($_COOKIE[$stringCookieQuantita])) {
+                                                                                        echo $_SESSION[$quantitaSessionName];
                                                                                     } else {
                                                                                         echo "0";
                                                                                     }

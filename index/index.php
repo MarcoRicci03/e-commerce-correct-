@@ -3,6 +3,9 @@ include("../chkCreateCart.php");
 if (!isset($_SESSION)) {
     session_start();
 }
+if (isset($_POST['filtroSearch'])) {
+    $_SESSION['filtroSearch'] = $_POST['filtroSearch'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -53,7 +56,19 @@ if (!isset($_SESSION)) {
                         <i class="bi-cart-fill me-1"></i>
                         Cart
                         <span class="badge bg-dark text-white ms-1 rounded-pill"><?php
-                                                                                    if (isset($_COOKIE["cart_quantita"])) {
+                                                                                    if (isset($_SESSION['id_user'])) {
+                                                                                        if (isset($_COOKIE["cart_quantita_" . $_SESSION['id_user']])) {
+                                                                                            $temp = explode("-", $_COOKIE["cart_quantita_" . $_SESSION['id_user']]);
+                                                                                            $somma = 0;
+                                                                                            for ($i = 0; $i < sizeof($temp); $i++) {
+                                                                                                $somma += intval($temp[$i]);
+                                                                                            }
+                                                                                            $_SESSION["sommaProdotti_" . $_SESSION['id_user']] = $somma;
+                                                                                            echo $somma;
+                                                                                        } else {
+                                                                                            echo "0";
+                                                                                        }
+                                                                                    } else if (isset($_COOKIE["cart_quantita"])) {
                                                                                         $temp = explode("-", $_COOKIE["cart_quantita"]);
                                                                                         $somma = 0;
                                                                                         for ($i = 0; $i < sizeof($temp); $i++) {
@@ -81,13 +96,33 @@ if (!isset($_SESSION)) {
     </header>
     <!-- Section-->
     <section class="py-5">
+        <form action="index.php" method="POST">
+            <div style="margin-left: 40%; margin-right: 40%;">
+                <div class="input-group rounded">
+                    <?php
+                    if (isset($_SESSION['filtroSearch'])) {
+                        echo '<input value="' . $_SESSION["filtroSearch"] . '" name="filtroSearch" type="search" class="form-control rounded" placeholder="Cerca" aria-label="Search" aria-describedby="search-addon" />';
+                    } else {
+                        echo '<input name="filtroSearch" type="search" class="form-control rounded" placeholder="Cerca" aria-label="Search" aria-describedby="search-addon" />';
+                    } ?>
+                    <button type="submit" class="input-group-text border-0" id="search-addon">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
         <div class="container px-4 px-lg-5 mt-5">
             <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
                 <!-- Inizio oggetto -->
                 <?php
                 include("../connection.php");
+
                 $q = "SELECT * FROM articles";
+                if (isset($_SESSION['filtroSearch'])) {
+                    $q .= " WHERE name LIKE '%$_SESSION[filtroSearch]%'";
+                }
                 $result = $conn->query($q);
+                $conn->close();
                 while ($row = $result->fetch_assoc()) {
                     echo "<div class='col mb-5'>";
                     echo "<div class='card h-100'>";
@@ -112,7 +147,6 @@ if (!isset($_SESSION)) {
                     echo "</div>";
                 }
                 ?>
-
             </div>
         </div>
     </section>

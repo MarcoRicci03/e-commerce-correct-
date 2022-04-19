@@ -71,8 +71,16 @@ if (!isset($_SESSION)) {
                         <i class="bi-cart-fill me-1"></i>
                         Cart
                         <span class="badge bg-dark text-white ms-1 rounded-pill"><?php
-                                                                                    if (isset($_COOKIE["cart_quantita"])) {
-                                                                                        echo $_SESSION["sommaProdotti"];
+                                                                                    $stringCookieID = "cart_ids";
+                                                                                    $stringCookieQuantita = "cart_quantita";
+                                                                                    $quantitaSessionName = "sommaProdotti";
+                                                                                    if (isset($_SESSION['id_user'])) {
+                                                                                        $stringCookieID = "cart_ids_" . $_SESSION['id_user'];
+                                                                                        $stringCookieQuantita = "cart_quantita_" . $_SESSION['id_user'];
+                                                                                        $quantitaSessionName = "sommaProdotti_" . $_SESSION['id_user'];
+                                                                                    }
+                                                                                    if (isset($_COOKIE[$stringCookieQuantita])) {
+                                                                                        echo $_SESSION[$quantitaSessionName];
                                                                                     } else {
                                                                                         echo "0";
                                                                                     }
@@ -105,14 +113,13 @@ if (!isset($_SESSION)) {
             <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
                 <?php
                 include("../connection.php");
-                if (isset($_COOKIE["cart_ids"]) && isset($_COOKIE["cart_quantita"])) {
-                    $vettIDS =  explode("-", $_COOKIE["cart_ids"]);
-                    $vettQuantita = explode("-", $_COOKIE["cart_quantita"]);
+                if (isset($_COOKIE[$stringCookieID]) && isset($_COOKIE[$stringCookieQuantita])) {
+                    $vettIDS =  explode("-", $_COOKIE[$stringCookieID]);
+                    $vettQuantita = explode("-", $_COOKIE[$stringCookieQuantita]);
                     for ($i = 0; $i <  sizeof($vettIDS) - 1; $i++) {
                         $q = "SELECT * FROM articles WHERE id_article = $vettIDS[$i]";
                         $result = $conn->query($q);
                         $row = $result->fetch_assoc();
-                        //echo var_dump($row);
                         echo "<div class='col mb-5'>";
                         echo "<div class='card h-100'>";
                         if (file_exists("../img/product_$row[id_article].jpg")) {
