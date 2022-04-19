@@ -1,13 +1,7 @@
 <?php 
 include("../connection.php");
 session_start();
-$query1=$conn->prepare("UPDATE users SET mail=?, username=?, name=?, surname=? WHERE id_user = $_SESSION[id_user]");
-$query1->bind_param('ssss',$mail, $username, $name, $surname); //error
-// set parameters and execute
-$mail = $_POST['txtMail'];
-$username = $_POST['txtUsername'];
-$name = $_POST['txtName'];
-$surname = $_POST['txtSurname'];
-$query1->execute();
-header("location:profile.php")
+$sql = "INSERT INTO orders (price, id_cart, id_address) VALUES (?, ?, ?)";
+//SELECT sum(price) FROM articles INNER JOIN contain on articles.id_article = contain.id_article WHERE contain.id_cart = (SELECT id_cart from carts where carts.id_user = 2);
+header("location:../index/index.php")
 ?>

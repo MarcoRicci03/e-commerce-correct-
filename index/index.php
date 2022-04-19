@@ -1,10 +1,22 @@
 <?php
 include("../chkCreateCart.php");
+include("../connection.php");
 if (!isset($_SESSION)) {
     session_start();
 }
 if (isset($_POST['filtroSearch'])) {
     $_SESSION['filtroSearch'] = $_POST['filtroSearch'];
+}
+if (isset($_SESSION['id_user'])) {
+    $q = "SELECT * FROM carts WHERE id_user= (SELECT id_user from users WHERE id_user = $_SESSION[id_user])";
+    $result = $conn->query($q);
+    if ($result->num_rows == 0) {
+        $stmt = $conn->prepare("INSERT INTO carts (id_user) VALUES (?)");
+        $stmt->bind_param("i", $id);
+        // set parameters and execute
+        $id = $_SESSION["id_user"];
+        $stmt->execute();
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -42,7 +54,6 @@ if (isset($_POST['filtroSearch'])) {
                     <li class="nav-item"><a class="nav-link active" aria-current="page" href="../index/index.php">Home</a></li>
                     <?php
                     if (isset($_SESSION['id_user'])) {
-                        include("../connection.php");
                         $q = "SELECT name, surname FROM users WHERE id_user = $_SESSION[id_user]";
                         $result = $conn->query($q);
                         $row = $result->fetch_assoc();
@@ -115,8 +126,6 @@ if (isset($_POST['filtroSearch'])) {
             <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
                 <!-- Inizio oggetto -->
                 <?php
-                include("../connection.php");
-
                 $q = "SELECT * FROM articles";
                 if (isset($_SESSION['filtroSearch'])) {
                     $q .= " WHERE name LIKE '%$_SESSION[filtroSearch]%'";
