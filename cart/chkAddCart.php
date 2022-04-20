@@ -1,15 +1,20 @@
 <?php
-//legenda del cookie-> id-quantita
 include("../connection.php");
 session_start();
 //prendo il carrello non pagato
+if (!function_exists('str_contains')) {
+    function str_contains($haystack, $needle) {
+        return $needle !== '' && mb_strpos($haystack, $needle) !== false;
+    }
+}
 if(isset($_SESSION['id_user'])){
     $q = "select id_contain, amount from contain where id_article = $_GET[id_article] and id_cart = (
         select id_cart from carts where closed = 0 and id_user = $_SESSION[id_user])";
     $result = $conn->query($q);
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        $q = "UPDATE contain SET amount = " . intval($row['amount']) + 1 . " WHERE contain.id_contain = $row[id_contain]";
+        $temp = intval($row['amount']) + 1;
+        $q = "UPDATE contain SET amount = " . $temp . " WHERE contain.id_contain = $row[id_contain]";
         $result = $conn->query($q);
     } else {
         $q = "select id_cart from carts where closed = 0 and id_user = $_SESSION[id_user]";

@@ -16,6 +16,9 @@ if ($_POST['txtPass'] == $_POST['txtPassConfirm']) {
         $name = $_POST['txtName'];
         $surname = $_POST['txtSurname'];
         $stmt->execute();
+        $q = "SELECT id_user FROM users WHERE username = '$_POST[txtUsername]' OR mail = '$_POST[txtMail]'";
+        $result = $conn->query($q);
+        $row = $result->fetch_assoc();
         $_SESSION["id_user"] = $row["id_user"];
         header("location:../index/index.php");
     }

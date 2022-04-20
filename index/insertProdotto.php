@@ -151,9 +151,6 @@ if (isset($_SESSION['id_user'])) {
                     echo "</div>";
                     echo "<div class='card-footer p-4 pt-0 border-top-0 bg-transparent'>";
                     echo "<div class='text-center'><a class='btn btn-outline-dark mt-auto' href='../cart/chkAddCart.php?id_article=$row[id_article]'>Aggiungi al carrello</a></div>";
-                    if(isset($_SESSION['admin'])){
-                        echo "<div class='text-center'><a class='btn btn-outline-dark mt-auto' href='../cart/chkAddCart.php?id_article=$row[id_article]'>Rimuovi dal database</a></div>";
-                    }
                     echo "</div>";
                     echo "</div>";
                     echo "</div>";

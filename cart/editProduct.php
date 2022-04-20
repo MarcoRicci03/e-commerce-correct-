@@ -27,7 +27,6 @@ if (isset($_SESSION['id_user'])) {
         }
         $q = "UPDATE contain SET amount = $valoreTemp WHERE contain.id_contain = $row[id_contain]";
         $result = $conn->query($q);
-        echo $q;
     }
 }
 $vettQuantita = explode("-", $_COOKIE[$stringCookieQuantita]);
