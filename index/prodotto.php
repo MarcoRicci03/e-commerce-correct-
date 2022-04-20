@@ -34,18 +34,7 @@ if (isset($_SESSION['id_user'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="../css/style.css" rel="stylesheet" />
-    <script>
-        function openCart() {
-            location.replace("../cart/cart.php");
-        }
 
-        function deleteProdotto(id) {
-            var ris = window.confirm("Sei sicuro di voler eliminare il prodotto selezionato?");
-            if (ris) {
-                location.replace("chkRimuovi.php?id_article=" + id);
-            }
-        }
-    </script>
 </head>
 
 <body>
@@ -58,7 +47,7 @@ if (isset($_SESSION['id_user'])) {
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="../index/index.php">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" aria-current="page" href="../index/index.php">Home</a></li>
                     <?php
                     if (isset($_SESSION['id_user'])) {
                         $q = "SELECT name, surname FROM users WHERE id_user = $_SESSION[id_user]";
@@ -99,19 +88,6 @@ if (isset($_SESSION['id_user'])) {
                                                                                     }
                                                                                     ?></span>
                     </button>
-
-                </form>
-                <form class="d-flex" action="insertProdotto.php">
-                    <?php
-                    if (isset($_SESSION['admin'])) {
-                        if ($_SESSION['admin'] == 1) {
-                            echo '<button class="btn btn-outline-dark" type="submit">
-                        <i class="bi bi-plus-lg"></i>
-                        Aggiungi un prodotto
-                    </button>';
-                        }
-                    }
-                    ?>
                 </form>
             </div>
         </div>
@@ -120,7 +96,7 @@ if (isset($_SESSION['id_user'])) {
     <header class="bg-dark py-5">
         <div class="container px-4 px-lg-5 my-5">
             <div class="text-center text-white">
-                <h1 class="display-4 fw-bolder">Lista prodotti</h1>
+                <h1 class="display-4 fw-bolder">Prodotto</h1>
                 <p class="lead fw-normal text-white-50 mb-0"></p>
             </div>
         </div>
@@ -142,43 +118,37 @@ if (isset($_SESSION['id_user'])) {
                 </div>
             </div>
         </form>
+    </section>
+    <div class="text-center">
         <div class="container px-4 px-lg-5 mt-5">
             <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
                 <!-- Inizio oggetto -->
                 <?php
-                $q = "SELECT * FROM articles";
-                if (isset($_SESSION['filtroSearch'])) {
-                    $q .= " WHERE name LIKE '%$_SESSION[filtroSearch]%'";
+                $sql = "select * from articles where id_article = $_GET[id]";
+                $row = ($conn->query($sql))->fetch_assoc();
+                echo "<div class='col mb-5'>";
+                echo "<div class='card h-100'>";
+                echo "<img class='card-img-top' src='$row[image]' alt='...'/>";
+                echo "<div class='card-body p-4'>";
+                echo "<div class='text-center'>";
+                echo "<h5 class='fw-bolder'><a href='prodotto.php?id=$row[id_article]'>$row[name]</a></h5>";
+                echo "<a ><a>$row[description]</a><br>";
+                echo "$row[price]€<br>";
+                echo "$row[average_stars]&#9733;<br>";
+                echo "</div>";
+                echo "</div>";
+                echo "<div class='card-footer p-4 pt-0 border-top-0 bg-transparent'>";
+                echo "<div class='text-center'><a class='btn btn-outline-dark mt-auto' href='../cart/chkAddCart.php?id_article=$row[id_article]'>Aggiungi al carrello</a></div>";
+                if (isset($_SESSION['admin'])) {
+                    echo "<br>";
+                    echo "<div class='text-center'><buotton class='btn btn-outline-dark mt-auto' onclick='deleteProdotto($row[id_article])'>Rimuovi dal database</button></div>";
                 }
-                $result = $conn->query($q);
-                $conn->close();
-                while ($row = $result->fetch_assoc()) {
-                    echo "<div class='col mb-5'>";
-                    echo "<div class='card h-100'>";
-                    echo "<img class='card-img-top' src='$row[image]' alt='...' />";
-                    echo "<div class='card-body p-4'>";
-                    echo "<div class='text-center'>";
-                    echo "<h5 class='fw-bolder'><a href='prodotto.php?id=$row[id_article]'>$row[name]</a></h5>";
-                    echo "$row[price]€<br>";
-                    echo "$row[average_stars]&#9733;<br>";
-                    echo "</div>";
-                    echo "</div>";
-                    echo "<div class='card-footer p-4 pt-0 border-top-0 bg-transparent'>";
-                    echo "<div class='text-center'><a class='btn btn-outline-dark mt-auto' href='../cart/chkAddCart.php?id_article=$row[id_article]'>Aggiungi al carrello</a></div>";
-                    if (isset($_SESSION['admin'])) {
-                        echo "<br>";
-                        echo "<div class='text-center'><buotton class='btn btn-outline-dark mt-auto' onclick='deleteProdotto($row[id_article])'>Rimuovi dal database</button></div>";
-                    }
-                    echo "</div>";
-                    echo "</div>";
-                    echo "</div>";
-                }
+                echo "</div>";
+                echo "</div>";
+                echo "</div>";
                 ?>
             </div>
         </div>
-    </section>
-    <div class="text-center">
-
     </div>
     <!-- Footer-->
     <footer class="py-5 bg-dark" style="position: sticky; top: 100%;">
