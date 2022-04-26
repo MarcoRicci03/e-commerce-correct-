@@ -102,8 +102,8 @@ if (!isset($_SESSION)) {
     <header class="bg-dark py-5">
         <div class="container px-4 px-lg-5 my-5">
             <div class="text-center text-white">
-                <h1 class="display-4 fw-bolder">Shop in style</h1>
-                <p class="lead fw-normal text-white-50 mb-0">With this shop hompeage template</p>
+                <h1 class="display-4 fw-bolder">Carrello</h1>
+                <!-- <p class="lead fw-normal text-white-50 mb-0">With this shop hompeage template</p> -->
             </div>
         </div>
     </header>
@@ -122,13 +122,7 @@ if (!isset($_SESSION)) {
                         $row = $result->fetch_assoc();
                         echo "<div class='col mb-5'>";
                         echo "<div class='card h-100'>";
-                        if (file_exists("../img/product_$row[id_article].jpg")) {
-                            echo "<img class='card-img-top' src='../img/product_$row[id_article].jpg' alt='...' />";
-                        } else if (file_exists("../img/product_$row[id_article].png")) {
-                            echo "<img class='card-img-top' src='../img/product_$row[id_article].png' alt='...' />";
-                        } else {
-                            echo "<img class='card-img-top' src='../img/default.jpg' alt='...' />";
-                        }
+                        echo "<img class='card-img-top' src='$row[image]' alt='...' />";
                         echo "<div class='card-body p-4'>";
                         echo "<div class='text-center'>";
                         echo "<h5 class='fw-bolder'>$row[name]</h5>";
@@ -152,19 +146,21 @@ if (!isset($_SESSION)) {
     </section>
     <div class="text-center">
         <?php
-    if(isset($_SESSION["id_user"])){
-        $sql = "SELECT sum(price * contain.amount) FROM articles INNER JOIN contain on articles.id_article = contain.id_article WHERE contain.id_cart = (SELECT id_cart from carts where carts.id_user = $_SESSION[id_user])";
-        $result = $conn->query($sql);
-        $row = $result->fetch_assoc();
-        echo $row["sum(price * contain.amount)"];
-    } else {
-        //da fare il totale
-        $sql = "SELECT sum(price * contain.amount) FROM articles INNER JOIN contain on articles.id_article = contain.id_article WHERE contain.id_cart = (SELECT id_cart from carts where carts.id_user = $_SESSION[id_user])";
-        $result = $conn->query($sql);
-        $row = $result->fetch_assoc();
-        echo $row["sum(price * contain.amount)"];
-    }
-        
+        if (isset($_SESSION["id_user"])) {
+            $sql = "SELECT sum(price * contain.amount) FROM articles INNER JOIN contain on articles.id_article = contain.id_article WHERE contain.id_cart = (SELECT id_cart from carts where carts.id_user = $_SESSION[id_user])";
+            $result = $conn->query($sql);
+            $row = $result->fetch_assoc();
+            echo $row["sum(price * contain.amount)"];
+        } else {
+            //da fare il totale
+            if (isset($_SESSION["id_user"])) {
+                $sql = "SELECT sum(price * contain.amount) FROM articles INNER JOIN contain on articles.id_article = contain.id_article WHERE contain.id_cart = (SELECT id_cart from carts where carts.id_user = $_SESSION[id_user])";
+                $result = $conn->query($sql);
+                $row = $result->fetch_assoc();
+                echo $row["sum(price * contain.amount)"];
+            }
+        }
+
         ?>
     </div>
     <!-- Footer-->

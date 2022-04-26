@@ -166,8 +166,10 @@ if (isset($_SESSION['id_user'])) {
                     echo "<div class='card-footer p-4 pt-0 border-top-0 bg-transparent'>";
                     echo "<div class='text-center'><a class='btn btn-outline-dark mt-auto' href='../cart/chkAddCart.php?id_article=$row[id_article]'>Aggiungi al carrello</a></div>";
                     if (isset($_SESSION['admin'])) {
-                        echo "<br>";
-                        echo "<div class='text-center'><buotton class='btn btn-outline-dark mt-auto' onclick='deleteProdotto($row[id_article])'>Rimuovi dal database</button></div>";
+                        if ($_SESSION['admin'] == 1) {
+                            echo "<br>";
+                            echo "<div class='text-center'><buotton class='btn btn-outline-dark mt-auto' onclick='deleteProdotto($row[id_article])'>Rimuovi dal database</button></div>";
+                        }
                     }
                     echo "</div>";
                     echo "</div>";

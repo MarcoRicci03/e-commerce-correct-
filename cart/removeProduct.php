@@ -20,9 +20,11 @@ for ($i = 0; $i < $max; $i++) {
 \array_splice($vettQuantita, sizeof($vettQuantita) - 1, 1);
 \array_splice($vettIDS, sizeof($vettIDS) - 1, 1);
 $IDFORQUERY = $vettIDS[$_GET['pos']];
-$q = "delete from contain where id_article = $IDFORQUERY and id_cart = (
-    select id_cart from carts where closed = 0 and id_user = $_SESSION[id_user])";
-$result = $conn->query($q);
+if (isset($_SESSION['id_user'])) {
+    $q = "delete from contain where id_article = $IDFORQUERY and id_cart = (
+        select id_cart from carts where closed = 0 and id_user = $_SESSION[id_user])";
+    $result = $conn->query($q);
+}
 
 \array_splice($vettQuantita, $_GET['pos'], 1);
 \array_splice($vettIDS, $_GET['pos'], 1);

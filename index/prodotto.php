@@ -146,20 +146,30 @@ if (isset($_SESSION['id_user'])) {
                 echo "</div>";
                 echo "</div>";
                 echo "</div>";
+                echo "</div>";
+                
+                $sql = "select * from comments INNER JOIN users ON comments.id_user = users.id_user WHERE id_article = $_GET[id]";
+                $result = $conn->query($sql);
+                while ($row = $result->fetch_assoc()){
+                    echo "<br>";
+                    echo "<div style='background-color:#CCCCCC; border 5px solid #FF0000'>";
+                    echo substr( $row["date"], 0, 10) . " $row[username] $row[stars]&#9733;<br>";
+                    echo "$row[text]";
+                    echo "</div>";
+                }
                 ?>
             </div>
         </div>
-    </div>
-    <!-- Footer-->
-    <footer class="py-5 bg-dark" style="position: sticky; top: 100%;">
-        <div class="container">
-            <p class="m-0 text-center text-white">Copyright &copy; E-Commerce 2022</p>
-        </div>
-    </footer>
-    <!-- Bootstrap core JS-->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Core theme JS-->
-    <script src="scripts.js"></script>
+        <!-- Footer-->
+        <footer class="py-5 bg-dark" style="position: sticky; top: 100%;">
+            <div class="container">
+                <p class="m-0 text-center text-white">Copyright &copy; E-Commerce 2022</p>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="scripts.js"></script>
 </body>
 
 </html>
