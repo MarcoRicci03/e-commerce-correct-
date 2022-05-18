@@ -20,17 +20,17 @@
                             <div class="mb-3"> <input value="Accedi" type="submit" class="btn btn-dark w-100"></div>
                             <div class="mb-3"> <a href="../index/index.php" class="btn btn-dark w-100">Accedi come guest</a> </div>
                             <div class="mb-3"> <a href="../register/register.php" class="btn btn-dark w-100">Non hai un account? Registrati</a> </div>
-                        </div>
+                        </div><?php
+    if (isset($_GET["msg"])) {
+        echo $_GET["msg"];
+    }
+    ?>
                     </div>
                 </div>
             </div>
         </div>
     </form>
-    <?php
-    if (isset($_GET["msg"])) {
-        echo $_GET["msg"];
-    }
-    ?>
+    
 
 
 </body>

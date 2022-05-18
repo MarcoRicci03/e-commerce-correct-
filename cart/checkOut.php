@@ -1,5 +1,5 @@
 <?php
-include("../chkCreateCart.php");
+//include("../chkCreateCart.php");
 include("../chkSession.php");
 ?>
 <!DOCTYPE html>
@@ -41,7 +41,7 @@ include("../chkSession.php");
                         echo '<li class="nav-item"><a class="nav-link toggle" aria-current="page" href="../login/login.php">Accedi</a></li>';
                     } ?>
                 </ul>
-                <form class="d-flex">
+                <form class="d-flex" action="cart.php">
                     <button class="btn btn-outline-dark" type="submit">
                         <i class="bi-cart-fill me-1"></i>
                         Cart
@@ -85,27 +85,29 @@ include("../chkSession.php");
             </div>
         </div>
     </section>
-    
+
     <div class="text-center">
-        <a>Seleziona l'indirizzo di spedizione</a>
-        <div style="margin-left: 40%; margin-right: 40%;">
-            <?php
-            $q = "SELECT * FROM addresses WHERE id_user = $_SESSION[id_user]";
-            $result = $conn->query($q);
-            echo '<select required= "true" class="form-select" aria-label="Default select example">';
-            $ind = false;
-            while ($row = $result->fetch_assoc()) {
-                echo "<option>$row[city], $row[address], $row[postal_code]</option>";
-                $ind = true;
-            }
-            echo "</select>";
-            if($ind){
-                echo "<button onclick=" . "window.location.href='chkChekOut.php';" . " >Ordina</button>";
-            }
-            ?>
-        </div>
-        
-        <a>Se non hai nessun indirizzo giá inserito puoi aggiungerlo da </a><a href="../profile/addAddress.php">qui.</a>
+        <form action="chkCheckOut.php" method="POST">
+            <a>Seleziona l'indirizzo di spedizione</a>
+            <div style="margin-left: 40%; margin-right: 40%;">
+                <?php
+                $q = "SELECT * FROM addresses WHERE id_user = $_SESSION[id_user]";
+                $result = $conn->query($q);
+                echo '<select name="cmbAddresses" required= "true" class="form-select" aria-label="Default select example">';
+                $ind = false;
+                while ($row = $result->fetch_assoc()) {
+                    echo "<option value='$row[id_address]'>$row[city], $row[address], $row[postal_code]</option>";
+                    $ind = true;
+                }
+                echo "</select>";
+                if ($ind) {
+                    echo "<input type='submit'>";
+                }
+                ?>
+            </div>
+
+            <a>Se non hai nessun indirizzo giá inserito puoi aggiungerlo da </a><a href="../profile/addAddress.php">qui.</a>
+        </form>
     </div>
     <!-- Footer-->
     <footer class="py-5 bg-dark" style="position: sticky; top: 100%;">

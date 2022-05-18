@@ -87,14 +87,29 @@ if (!isset($_SESSION)) {
                                                                                     ?></span>
                     </button>
                 </form>
-                <?php
-                echo '<form class="d-flex" action="checkOut.php">
-                <button class="btn btn-outline-dark" type="submit">
-                    <i class="bi bi-cash"></i>
-                    Checkout
-                </button>
-            </form>'
-                ?>
+                <form class="d-flex" action="checkOut.php">
+                    <button class="btn btn-outline-dark" type="submit">
+                        <i class="bi bi-cash"></i>
+                        Checkout: <?php
+                                    if (isset($_SESSION["id_user"])) {
+                                        $sql = "SELECT sum(price * contain.amount) FROM articles INNER JOIN contain on articles.id_article = contain.id_article WHERE contain.id_cart = (SELECT id_cart from carts where carts.id_user = $_SESSION[id_user])";
+                                        $result = $conn->query($sql);
+                                        $row = $result->fetch_assoc();
+                                        echo $row["sum(price * contain.amount)"];
+                                    } else {
+                                        //da fare il totale
+                                        if (isset($_SESSION["id_user"])) {
+                                            $sql = "SELECT sum(price * contain.amount) FROM articles INNER JOIN contain on articles.id_article = contain.id_article WHERE contain.id_cart = (SELECT id_cart from carts where carts.id_user = $_SESSION[id_user])";
+                                            $result = $conn->query($sql);
+                                            $row = $result->fetch_assoc();
+                                            echo $row["sum(price * contain.amount)"];
+                                        }
+                                    }
+
+                                    ?>
+                    </button>
+                </form>
+
             </div>
         </div>
     </nav>
@@ -145,23 +160,7 @@ if (!isset($_SESSION)) {
         </div>
     </section>
     <div class="text-center">
-        <?php
-        if (isset($_SESSION["id_user"])) {
-            $sql = "SELECT sum(price * contain.amount) FROM articles INNER JOIN contain on articles.id_article = contain.id_article WHERE contain.id_cart = (SELECT id_cart from carts where carts.id_user = $_SESSION[id_user])";
-            $result = $conn->query($sql);
-            $row = $result->fetch_assoc();
-            echo $row["sum(price * contain.amount)"];
-        } else {
-            //da fare il totale
-            if (isset($_SESSION["id_user"])) {
-                $sql = "SELECT sum(price * contain.amount) FROM articles INNER JOIN contain on articles.id_article = contain.id_article WHERE contain.id_cart = (SELECT id_cart from carts where carts.id_user = $_SESSION[id_user])";
-                $result = $conn->query($sql);
-                $row = $result->fetch_assoc();
-                echo $row["sum(price * contain.amount)"];
-            }
-        }
 
-        ?>
     </div>
     <!-- Footer-->
     <footer class="py-5 bg-dark" style="position: sticky; top: 100%;">
