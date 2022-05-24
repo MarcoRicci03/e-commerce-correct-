@@ -23,27 +23,6 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Struttura della tabella `1telegram_users`
---
-
-CREATE TABLE IF NOT EXISTS `1telegram_users` (
-  `username_id` int NOT NULL,
-  `lat` float NOT NULL,
-  `lng` float NOT NULL,
-  `id_chat` int NOT NULL,
-  PRIMARY KEY (`username_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci AUTO_INCREMENT=8 ;
-
---
--- Dump dei dati per la tabella `1telegram_users`
---
-
-INSERT INTO `1telegram_users` (`username_id`, `lat`, `lng`, `id_chat`) VALUES
-(283960706, 45.7395, 9.1291, 283960706);
-
--- --------------------------------------------------------
-
---
 -- Struttura della tabella `addresses`
 --
 
