@@ -8,7 +8,7 @@ if (isset($_POST['filtroSearch'])) {
     $_SESSION['filtroSearch'] = $_POST['filtroSearch'];
 }
 if (isset($_SESSION['id_user'])) {
-    $q = "SELECT * FROM carts WHERE id_user= (SELECT id_user from users WHERE id_user = $_SESSION[id_user])";
+    $q = "SELECT * FROM carts WHERE id_user= $_SESSION[id_user] AND closed = 0";
     $result = $conn->query($q);
     if ($result->num_rows == 0) {
         $stmt = $conn->prepare("INSERT INTO carts (id_user) VALUES (?)");
@@ -17,6 +17,10 @@ if (isset($_SESSION['id_user'])) {
         $id = $_SESSION["id_user"];
         $stmt->execute();
     }
+    $q = "select id_cart from carts where closed = 0 and id_user = $_SESSION[id_user]";
+    $result = $conn->query($q);
+    $row = $result->fetch_assoc();
+    $_SESSION["id_cart"] = $row["id_cart"];
 }
 ?>
 <!DOCTYPE html>
@@ -164,8 +168,7 @@ if (isset($_SESSION['id_user'])) {
                     echo "$row[average_stars]&#9733;<br>";
                     if (isset($_SESSION['admin'])) {
                         if ($_SESSION['admin'] == 1) {
-                            echo $row['amount'];
-                            echo "<input id='txtNewQ' value='$row[amount]' type='text'></input><button onclick='changeAmount($row[id_article])'>Aggiorna</button><br>";
+                            echo "<input id='txtNewQ$row[id_article]' onchange='changeV()' value='$row[amount]' type='number'/><button onclick='changeAmount($row[id_article])'>Aggiorna</button><br>";
                         }
                     }
                     echo "</div>";
@@ -201,16 +204,9 @@ if (isset($_SESSION['id_user'])) {
     <script src="scripts.js"></script>
     <script>
         function changeAmount(idArticle) {
-            var x = document.getElementById("txtNewQ").value;
-            console.log(x);
-            x = $("#txtNewQ").val();
-            console.log(x);
-            //location.replace("chkChangeAmount.php?newQ=" +  + "&idA=" + idArticle);
             $.ajax({
-                url: "chkChangeAmount.php?newQ=" + x + "&idA=" + idArticle,
-                success: function(data) {
-                    alert("fatto");
-                }
+                url: "chkChangeAmount.php?newQ=" + $("#txtNewQ" + idArticle).val() + "&idA=" + idArticle,
+                success: function(data) {}
             });
         }
     </script>

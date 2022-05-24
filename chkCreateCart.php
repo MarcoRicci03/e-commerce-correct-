@@ -1,6 +1,5 @@
 <?php
 session_start();
-// if (!isset($_COOKIE["user_$_SESSION[id_user]"]) && !isset($_COOKIE["user_$_SERVER[REMOTE_ADDR]"])) {
 if (isset($_SESSION['id_user'])) {
     if (!isset($_COOKIE["cart_ids_" . $_SESSION['id_user']]) && !isset($_COOKIE["cart_quantita_" . $_SESSION['id_user']])) {
         $cookie_name = "cart_ids_" . $_SESSION['id_user'];

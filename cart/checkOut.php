@@ -93,7 +93,7 @@ include("../chkSession.php");
                 <?php
                 $q = "SELECT * FROM addresses WHERE id_user = $_SESSION[id_user]";
                 $result = $conn->query($q);
-                echo '<select required= "true" class="form-select" aria-label="Default select example">';
+                echo '<select name="cmbAddress" required= "true" class="form-select" aria-label="Default select example">';
                 $ind = false;
                 while ($row = $result->fetch_assoc()) {
                     echo "<option value='$row[id_address]'>$row[city], $row[address], $row[postal_code]</option>";

@@ -34,6 +34,8 @@ if (isset($_SESSION['id_user'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="../css/style.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
 
 </head>
 
@@ -147,13 +149,24 @@ if (isset($_SESSION['id_user'])) {
                 echo "</div>";
                 echo "</div>";
                 echo "</div>";
-                
-                $sql = "select * from comments INNER JOIN users ON comments.id_user = users.id_user WHERE id_article = $_GET[id]";
+                if (isset($_SESSION['id_user'])) {
+                    echo "<textarea type='text' id='txtNewComment' style='width=100px;'></textarea>
+                    <select id='stars'>
+                        <option value='1'>1</option>
+                        <option value='2'>2</option>
+                        <option value='3'>3</option>
+                        <option value='4'>4</option>
+                        <option value='5'>5</option>
+                    </select>
+                    <button onclick='addComment($_GET[id])'>Pubblica</button>
+                    <br>";
+                }
+                $sql = "select * from comments INNER JOIN users ON comments.id_user = users.id_user WHERE id_article = $_GET[id] ORDER BY dateTime DESC";
                 $result = $conn->query($sql);
-                while ($row = $result->fetch_assoc()){
+                while ($row = $result->fetch_assoc()) {
                     echo "<br>";
                     echo "<div style='background-color:#CCCCCC; border 5px solid #FF0000'>";
-                    echo substr( $row["date"], 0, 10) . " $row[username] $row[stars]&#9733;<br>";
+                    echo substr($row["date"], 0, 10) . " $row[username] $row[stars]&#9733;<br>";
                     echo "$row[text]";
                     echo "</div>";
                 }
@@ -170,6 +183,21 @@ if (isset($_SESSION['id_user'])) {
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme JS-->
         <script src="scripts.js"></script>
+        <script>
+            function addComment(idP) {
+                //location.replace("chkAddComment.php?text=" + $("#txtNewComment").val() + "&stars=" + document.getElementById("stars").options[document.getElementByID("stars").selectedIndex].value + "&id_article=" + idP);
+                //console.log("chkAddComment.php?text=" + $("#txtNewComment").val() + "&stars=" + $('#stars option:selected').val() + "&id_article=" + idP);
+                $.ajax({
+                    url: "chkAddComment.php?text=" + $("#txtNewComment").val() + "&stars=" + $('#stars option:selected').val() + "&id_article=" + idP,
+                    success: function(data) {
+                        window.location.reload();
+                    }
+                });
+                window.location.reload();
+
+            }
+        </script>
+
 </body>
 
 </html>
