@@ -1,5 +1,5 @@
 <?php
-//include("../chkCreateCart.php");
+include("../chkCreateCart.php");
 include("../chkSession.php");
 ?>
 <!DOCTYPE html>
@@ -93,7 +93,7 @@ include("../chkSession.php");
                 <?php
                 $q = "SELECT * FROM addresses WHERE id_user = $_SESSION[id_user]";
                 $result = $conn->query($q);
-                echo '<select name="cmbAddresses" required= "true" class="form-select" aria-label="Default select example">';
+                echo '<select required= "true" class="form-select" aria-label="Default select example">';
                 $ind = false;
                 while ($row = $result->fetch_assoc()) {
                     echo "<option value='$row[id_address]'>$row[city], $row[address], $row[postal_code]</option>";
@@ -101,7 +101,7 @@ include("../chkSession.php");
                 }
                 echo "</select>";
                 if ($ind) {
-                    echo "<input type='submit'>";
+                    echo "<input type='submit'>Ordina</button>";
                 }
                 ?>
             </div>

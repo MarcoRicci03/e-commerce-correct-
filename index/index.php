@@ -34,6 +34,7 @@ if (isset($_SESSION['id_user'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="../css/style.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
         function openCart() {
             location.replace("../cart/cart.php");
@@ -161,6 +162,12 @@ if (isset($_SESSION['id_user'])) {
                     echo "<h5 class='fw-bolder'><a href='prodotto.php?id=$row[id_article]'>$row[name]</a></h5>";
                     echo "$row[price]€<br>";
                     echo "$row[average_stars]&#9733;<br>";
+                    if (isset($_SESSION['admin'])) {
+                        if ($_SESSION['admin'] == 1) {
+                            echo $row['amount'];
+                            echo "<input id='txtNewQ' value='$row[amount]' type='text'></input><button onclick='changeAmount($row[id_article])'>Aggiorna</button><br>";
+                        }
+                    }
                     echo "</div>";
                     echo "</div>";
                     echo "<div class='card-footer p-4 pt-0 border-top-0 bg-transparent'>";
@@ -168,7 +175,7 @@ if (isset($_SESSION['id_user'])) {
                     if (isset($_SESSION['admin'])) {
                         if ($_SESSION['admin'] == 1) {
                             echo "<br>";
-                            echo "<div class='text-center'><buotton class='btn btn-outline-dark mt-auto' onclick='deleteProdotto($row[id_article])'>Rimuovi dal database</button></div>";
+                            echo "<div class='text-center'><button class='btn btn-outline-dark mt-auto' onclick='deleteProdotto($row[id_article])'>Rimuovi dal database</button></div>";
                         }
                     }
                     echo "</div>";
@@ -192,6 +199,21 @@ if (isset($_SESSION['id_user'])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Core theme JS-->
     <script src="scripts.js"></script>
+    <script>
+        function changeAmount(idArticle) {
+            var x = document.getElementById("txtNewQ").value;
+            console.log(x);
+            x = $("#txtNewQ").val();
+            console.log(x);
+            //location.replace("chkChangeAmount.php?newQ=" +  + "&idA=" + idArticle);
+            $.ajax({
+                url: "chkChangeAmount.php?newQ=" + x + "&idA=" + idArticle,
+                success: function(data) {
+                    alert("fatto");
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>
